@@ -1,0 +1,52 @@
+============================================================
+  CI/CD Security Scanner v1.0
+============================================================
+[*] Total findings: 11
+[*] Breakdown     : {'CRITICAL': 3, 'HIGH': 4, 'MEDIUM': 3, 'LOW': 1}
+
+[CRITICAL] Workflow uses `pull_request_target` with `checkout` of PR code
+   samples\vulnerable_workflow.yml:1 (risk=75.6, OWASP CICD-SEC-7 (pwn request))
+   > pull_request_target + checkout of PR ref
+
+[CRITICAL] Hardcoded secret / API key in pipeline (AWS Access Key ID)
+   samples\vulnerable_workflow.yml:35 (risk=72.0, OWASP CICD-SEC-6)
+   > AWS_ACCESS_KEY_ID: AKIAABCDEFGHIJKLMNOP
+
+[CRITICAL] Hardcoded secret / API key in pipeline (GitHub PAT (classic))
+   samples\vulnerable_workflow.yml:37 (risk=72.0, OWASP CICD-SEC-6)
+   > GH_TOKEN: ghp_1234567890abcdefghijklmnopqrstuvwxyz12
+
+[HIGH] `curl | sh` or `wget | bash` pipe-to-shell in pipeline
+   samples\vulnerable_workflow.yml:31 (risk=65.8, SLSA integrity)
+   > run: curl -fsSL https://install.example.com/run.sh | sh
+
+[HIGH] Unpinned third-party GitHub Action (not pinned to SHA)
+   samples\vulnerable_workflow.yml:22 (risk=65.2, OWASP CICD-SEC-4, SLSA L2)
+   > uses: some-random-user/deploy-action@v1
+
+[HIGH] Self-hosted runner used with public repo (code execution risk)
+   samples\vulnerable_workflow.yml:14 (risk=61.0, GitHub security docs)
+   > runs-on: self-hosted
+
+[HIGH] Default permissions (GITHUB_TOKEN write-all) not restricted
+   samples\vulnerable_workflow.yml:1 (risk=61.0, OWASP CICD-SEC-2)
+   > no top-level `permissions:` block (uses default write-all)
+
+[MEDIUM] AWS credentials passed as environment variables (prefer OIDC)
+   samples\vulnerable_workflow.yml:35 (risk=53.0, OWASP CICD-SEC-6)
+   > AWS_ACCESS_KEY_ID: AKIAABCDEFGHIJKLMNOP
+
+[MEDIUM] AWS credentials passed as environment variables (prefer OIDC)
+   samples\vulnerable_workflow.yml:36 (risk=53.0, OWASP CICD-SEC-6)
+   > AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMIxK7MDENGbPxRfiCYEXAMPLEKEYSE
+
+[MEDIUM] Unverified third-party action (not from verified creator)
+   samples\vulnerable_workflow.yml:22 (risk=50.0, OWASP CICD-SEC-3)
+   > uses: some-random-user/deploy-action@v1
+
+[LOW] No secret-scanning / SAST step in workflow
+   samples\vulnerable_workflow.yml:1 (risk=36.0, OWASP CICD-SEC-1)
+   > no secret-scan / SAST step detected
+
+[*] JSON report: reports/cicd_report.json
+[*] HTML report: reports/cicd_report.html

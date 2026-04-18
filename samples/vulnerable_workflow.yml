@@ -1,0 +1,42 @@
+name: Bad Workflow
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Docker image tag to deploy"
+        required: true
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout PR code on pull_request_target (pwn-request antipattern)
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Third-party unpinned action
+        uses: some-random-user/deploy-action@v1
+
+      - name: Echo PR title (script injection)
+        run: echo "Processing PR titled ${{ github.event.pull_request.title }}"
+
+      - name: Process workflow dispatch input
+        run: echo "Deploying tag ${{ github.event.inputs.image_tag }}"
+
+      - name: Download installer and run
+        run: curl -fsSL https://install.example.com/run.sh | sh
+
+      - name: Build docker image
+        env:
+          AWS_ACCESS_KEY_ID: AKIAABCDEFGHIJKLMNOP
+          AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMIxK7MDENGbPxRfiCYEXAMPLEKEYSE
+          GH_TOKEN: ghp_1234567890abcdefghijklmnopqrstuvwxyz12
+        run: |
+          docker build -t myapp:latest .
+
+      - name: Pull image
+        uses: docker://nginx:latest

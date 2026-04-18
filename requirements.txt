@@ -1,0 +1,2 @@
+# CI/CD Security Scanner has zero runtime dependencies.
+# Uses only Python 3.8+ stdlib (re, json, pathlib, dataclasses, argparse).
